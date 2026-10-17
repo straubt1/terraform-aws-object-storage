@@ -1,2 +1,14 @@
 # terraform-aws-object-storage
-Terraform Module for AWS S3 Object Storage
+
+Terraform module for AWS S3 object storage.
+
+Versions are authored on `main` in [`versions/`](versions/). Each `versions/vX.Y.Z/` folder is one module version, and the files in that folder are the module root.
+
+Publish from `main` with [Task](https://taskfile.dev/):
+
+```bash
+task publish
+task publish -- v1.0.0
+```
+
+`task publish` copies each folder onto a branch of the same name, with those files at the repository root. It commits when the files changed (`release: publish module vX.Y.Z`), moves the annotated tag `vX.Y.Z` to that commit, and force-pushes the branch and the tag to `origin`.

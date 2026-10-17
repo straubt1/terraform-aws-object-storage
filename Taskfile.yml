@@ -1,0 +1,7 @@
+version: "3"
+
+tasks:
+  publish:
+    desc: Copy versions/vX.Y.Z onto matching branches, move tags, and force-push
+    cmds:
+      - bash scripts/publish-versions.sh {{.CLI_ARGS}}
