@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Copy versions/vX.Y.Z onto a same-named branch at the repo root, move the
 # matching annotated tag, and force-push both refs to origin.
-# Usage: scripts/publish-versions.sh [vX.Y.Z]
+# versions/latest is published the same way onto a branch named latest,
+# without a tag.
+# Usage: scripts/publish-versions.sh [vX.Y.Z|latest]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -22,8 +24,8 @@ if [[ "$current" != "main" ]]; then
 fi
 
 requested="${1:-}"
-if [[ -n "$requested" && ! "$requested" =~ $VERSION_RE ]]; then
-  echo "ERROR: version must match vX.Y.Z (got: ${requested})" >&2
+if [[ -n "$requested" && "$requested" != "latest" && ! "$requested" =~ $VERSION_RE ]]; then
+  echo "ERROR: version must match vX.Y.Z or latest (got: ${requested})" >&2
   exit 1
 fi
 
@@ -32,22 +34,34 @@ if [[ ! -d versions ]]; then
   exit 1
 fi
 
+publish_latest=false
+if [[ -z "$requested" || "$requested" == "latest" ]]; then
+  publish_latest=true
+fi
+
 shopt -s nullglob
 candidates=()
-for dir in versions/v*/; do
-  ver="${dir%/}"
-  ver="${ver#versions/}"
-  if [[ ! "$ver" =~ $VERSION_RE ]]; then
-    continue
-  fi
-  if [[ -n "$requested" && "$ver" != "$requested" ]]; then
-    continue
-  fi
-  candidates+=("$ver")
-done
+if [[ "$requested" != "latest" ]]; then
+  for dir in versions/v*/; do
+    ver="${dir%/}"
+    ver="${ver#versions/}"
+    if [[ ! "$ver" =~ $VERSION_RE ]]; then
+      continue
+    fi
+    if [[ -n "$requested" && "$ver" != "$requested" ]]; then
+      continue
+    fi
+    candidates+=("$ver")
+  done
+fi
 shopt -u nullglob
 
-if [[ ${#candidates[@]} -eq 0 ]]; then
+if [[ "$publish_latest" == true && ! -d versions/latest ]]; then
+  echo "ERROR: versions/latest/ not found" >&2
+  exit 1
+fi
+
+if [[ ${#candidates[@]} -eq 0 && "$publish_latest" != true ]]; then
   if [[ -n "$requested" ]]; then
     echo "ERROR: versions/${requested}/ not found" >&2
   else
@@ -57,10 +71,12 @@ if [[ ${#candidates[@]} -eq 0 ]]; then
 fi
 
 versions=()
-while IFS= read -r line; do
-  [[ -z "$line" ]] && continue
-  versions+=("$line")
-done < <(printf '%s\n' "${candidates[@]}" | sort -t. -k1.2,1n -k2,2n -k3,3n)
+if [[ ${#candidates[@]} -gt 0 ]]; then
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    versions+=("$line")
+  done < <(printf '%s\n' "${candidates[@]}" | sort -t. -k1.2,1n -k2,2n -k3,3n)
+fi
 
 wt=""
 cleanup() {
@@ -77,6 +93,7 @@ trap cleanup EXIT
 
 publish_one() {
   local ver="$1"
+  local with_tag="$2"
   local src="${ROOT}/versions/${ver}"
 
   if [[ -z "$(ls -A "$src")" ]]; then
@@ -112,11 +129,14 @@ publish_one() {
     echo "==> ${ver}: committed"
   fi
 
-  git -C "$wt" tag -f -a "$ver" -m "Terraform module ${ver}"
-
-  git push --force origin \
-    "refs/heads/${ver}:refs/heads/${ver}" \
-    "refs/tags/${ver}:refs/tags/${ver}"
+  if [[ "$with_tag" == "true" ]]; then
+    git -C "$wt" tag -f -a "$ver" -m "Terraform module ${ver}"
+    git push --force origin \
+      "refs/heads/${ver}:refs/heads/${ver}" \
+      "refs/tags/${ver}:refs/tags/${ver}"
+  else
+    git push --force origin "refs/heads/${ver}:refs/heads/${ver}"
+  fi
 
   cleanup
   echo "==> published ${ver}"
@@ -125,6 +145,12 @@ publish_one() {
 echo "==> fetching origin"
 git fetch origin
 
-for ver in "${versions[@]}"; do
-  publish_one "$ver"
-done
+if [[ ${#versions[@]} -gt 0 ]]; then
+  for ver in "${versions[@]}"; do
+    publish_one "$ver" true
+  done
+fi
+
+if [[ "$publish_latest" == true ]]; then
+  publish_one latest false
+fi
