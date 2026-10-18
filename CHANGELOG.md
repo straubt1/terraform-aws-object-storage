@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+
+- Add an `Owner` tag set to `platform` to the common tags applied by the module.
+
 ## v1.0.1
 
 - Enable versioning on the assets bucket.
