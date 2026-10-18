@@ -1,7 +1,7 @@
 locals {
   bucket_name = "${var.name_prefix}-${var.environment}-assets-rename"
   common_tags = merge(var.tags, {
-    Module      = "terraform-aws-storage"
+    Module      = "terraform-aws-object-storage"
     Version     = "v1.0.2"
     Name        = "demo-v2"
     Description = "Shared networking assets bucket"

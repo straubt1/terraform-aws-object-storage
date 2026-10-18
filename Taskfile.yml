@@ -5,3 +5,8 @@ tasks:
     desc: Publish version branches with tags, and latest as a branch only
     cmds:
       - bash scripts/publish-versions.sh {{.CLI_ARGS}}
+
+  delete-local-tags:
+    desc: Delete local tags without changing the remote
+    cmds:
+      - bash scripts/delete-local-tags.sh
