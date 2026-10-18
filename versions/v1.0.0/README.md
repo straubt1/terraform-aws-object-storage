@@ -1,8 +1,6 @@
-# terraform-aws-object-storage v1.0.0
+# terraform-aws-object-storage
 
-Creates an S3 assets bucket named `${name_prefix}-${environment}-assets`.
-
-The bucket is tagged with `Name = demo`.
+Creates an S3 Bucket.
 
 ## Inputs
 

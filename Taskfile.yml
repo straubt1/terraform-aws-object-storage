@@ -2,7 +2,7 @@ version: "3"
 
 tasks:
   publish:
-    desc: Publish version branches with tags, and latest as a branch only
+    desc: Publish each versions/ folder as a branch; tag folders named vX.Y.Z
     cmds:
       - bash scripts/publish-versions.sh {{.CLI_ARGS}}
 

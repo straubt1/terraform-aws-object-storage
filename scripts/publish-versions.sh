@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Copy versions/vX.Y.Z onto a same-named branch at the repo root, move the
-# matching annotated tag, and force-push both refs to origin.
-# versions/latest is published the same way onto a branch named latest,
-# without a tag.
-# Usage: scripts/publish-versions.sh [vX.Y.Z|latest]
+# Copy each versions/<name>/ folder onto a same-named branch at the repo root
+# and force-push that branch to origin. A folder named vX.Y.Z also gets a
+# matching annotated tag, force-pushed with the branch.
+# Usage: scripts/publish-versions.sh [folder-name]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -24,58 +23,55 @@ if [[ "$current" != "main" ]]; then
 fi
 
 requested="${1:-}"
-if [[ -n "$requested" && "$requested" != "latest" && ! "$requested" =~ $VERSION_RE ]]; then
-  echo "ERROR: version must match vX.Y.Z or latest (got: ${requested})" >&2
-  exit 1
-fi
 
 if [[ ! -d versions ]]; then
   echo "ERROR: versions/ directory not found" >&2
   exit 1
 fi
 
-publish_latest=false
-if [[ -z "$requested" || "$requested" == "latest" ]]; then
-  publish_latest=true
-fi
-
 shopt -s nullglob
 candidates=()
-if [[ "$requested" != "latest" ]]; then
-  for dir in versions/v*/; do
-    ver="${dir%/}"
-    ver="${ver#versions/}"
-    if [[ ! "$ver" =~ $VERSION_RE ]]; then
-      continue
-    fi
-    if [[ -n "$requested" && "$ver" != "$requested" ]]; then
-      continue
-    fi
-    candidates+=("$ver")
-  done
-fi
+for dir in versions/*/; do
+  name="${dir%/}"
+  name="${name#versions/}"
+  if [[ -n "$requested" && "$name" != "$requested" ]]; then
+    continue
+  fi
+  candidates+=("$name")
+done
 shopt -u nullglob
 
-if [[ "$publish_latest" == true && ! -d versions/latest ]]; then
-  echo "ERROR: versions/latest/ not found" >&2
-  exit 1
-fi
-
-if [[ ${#candidates[@]} -eq 0 && "$publish_latest" != true ]]; then
+if [[ ${#candidates[@]} -eq 0 ]]; then
   if [[ -n "$requested" ]]; then
     echo "ERROR: versions/${requested}/ not found" >&2
   else
-    echo "ERROR: no versions/vX.Y.Z folders found" >&2
+    echo "ERROR: no folders found in versions/" >&2
   fi
   exit 1
 fi
 
-versions=()
-if [[ ${#candidates[@]} -gt 0 ]]; then
+versioned=()
+others=()
+for name in "${candidates[@]}"; do
+  if [[ "$name" =~ $VERSION_RE ]]; then
+    versioned+=("$name")
+  else
+    others+=("$name")
+  fi
+done
+
+names=()
+if [[ ${#versioned[@]} -gt 0 ]]; then
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    versions+=("$line")
-  done < <(printf '%s\n' "${candidates[@]}" | sort -t. -k1.2,1n -k2,2n -k3,3n)
+    names+=("$line")
+  done < <(printf '%s\n' "${versioned[@]}" | sort -t. -k1.2,1n -k2,2n -k3,3n)
+fi
+if [[ ${#others[@]} -gt 0 ]]; then
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    names+=("$line")
+  done < <(printf '%s\n' "${others[@]}" | sort)
 fi
 
 wt=""
@@ -115,7 +111,18 @@ publish_one() {
   fi
 
   find "$wt" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-  find "$src" -mindepth 1 -maxdepth 1 ! -name .git -exec cp -a {} "$wt/" \;
+  # Local Terraform data is not part of the module. .terraform/ holds the
+  # provider binary, which is too large for GitHub.
+  find "$src" -mindepth 1 -maxdepth 1 \
+    ! -name .git \
+    ! -name .terraform \
+    ! -name .terraform.lock.hcl \
+    ! -name .terraform.tfstate.lock.info \
+    ! -name '*.tfstate' \
+    ! -name '*.tfstate.*' \
+    ! -name 'crash.log' \
+    ! -name 'crash.*.log' \
+    -exec cp -a {} "$wt/" \;
 
   git -C "$wt" add -A
   if git -C "$wt" diff --cached --quiet; then
@@ -145,12 +152,10 @@ publish_one() {
 echo "==> fetching origin"
 git fetch origin
 
-if [[ ${#versions[@]} -gt 0 ]]; then
-  for ver in "${versions[@]}"; do
-    publish_one "$ver" true
-  done
-fi
-
-if [[ "$publish_latest" == true ]]; then
-  publish_one latest false
-fi
+for name in "${names[@]}"; do
+  if [[ "$name" =~ $VERSION_RE ]]; then
+    publish_one "$name" true
+  else
+    publish_one "$name" false
+  fi
+done
