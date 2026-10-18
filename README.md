@@ -2,6 +2,16 @@
 
 Creates an S3 Bucket with versioning enabled.
 
+## Tags
+
+The module applies the following fixed tags to the assets bucket:
+
+- `Module` = `terraform-aws-object-storage`
+- `Description` = `Shared object storage assets bucket with versioning`
+- `Owner` = `platform`
+
+Additional tags can be passed through the `tags` input. If a key in `tags` conflicts with a module-defined tag, the module-defined value takes precedence.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

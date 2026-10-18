@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+
+- Add an `Owner` tag set to `platform` in `common_tags` (`main.tf`). The `Module` and `Description` tags are unchanged.
+
 ## v1.0.1
 
 - Enable versioning on the assets bucket.
