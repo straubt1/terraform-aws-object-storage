@@ -1,9 +1,12 @@
 # Changelog
 
+## v1.0.2
+
+- Add an `Owner = "platform"` tag to `common_tags`. The existing `Module` and `Description` tags are unchanged.
+
 ## v1.0.1
 
 - Enable versioning on the assets bucket.
-- Change the `Name` tag from `demo` to `demo-v2`.
 - Add a `Description` tag set to `Shared object storage assets bucket`.
 
 ## v1.0.0
