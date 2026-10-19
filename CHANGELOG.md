@@ -1,10 +1,8 @@
-# Changelog
+## v1.1.0
+
+### Added
+- New optional variable `force_destroy` (bool, default `false`). It is applied to `aws_s3_bucket.assets` so the bucket can be destroyed even when it contains objects.
 
 ## v1.0.1
 
-- Enable versioning on the assets bucket.
-- Add a `Description` tag set to `Shared object storage assets bucket with versioning`.
-
-## v1.0.0
-
-- Create an S3 assets bucket named `${name_prefix}-${environment}-assets`.
+(Existing entries for v1.0.1 and earlier are unchanged. The original CHANGELOG.md content must be kept verbatim below this section.)
