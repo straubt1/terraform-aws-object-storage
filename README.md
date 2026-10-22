@@ -4,8 +4,8 @@ Creates an S3 Bucket with versioning enabled.
 
 ## Inputs and outputs
 
-- `environment`: Environment label used in the bucket name (default `"dev"`).
-- `name_prefix`: Prefix used in the bucket name (default `"object-storage"`).
+- `environment`: Environment label applied to resources (default `"dev"`).
+- `name_prefix`: Prefix for resource names (default `"object-storage"`).
 - `tags`: Additional tags applied to `aws_s3_bucket.assets` and `aws_s3_bucket_versioning.assets` (the bucket and its versioning configuration).
 - `kms_key_arn`: ARN of the customer managed KMS key used to encrypt the bucket. Required.
 - Outputs: `bucket_id` and `bucket_arn` for the assets bucket.

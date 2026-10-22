@@ -1,10 +1,10 @@
 # Changelog
 
-## v1.0.2
+## v2.0.0
 
-- Rename the assets bucket suffix from `-assets` to `-assets-rename`. This replaces the existing bucket.
+- Rename the assets bucket suffix from `-assets` to `-assets-rename`. This replaces the existing bucket (breaking change).
 - Add S3 public access block for the assets bucket.
-- Encrypt the assets bucket with a customer managed KMS key (`kms_key_arn` input).
+- Encrypt the assets bucket with a customer managed KMS key (`kms_key_arn` input, required with no default; breaking change).
 - Update README inputs, outputs, and tag scope.
 
 ## v1.0.1
