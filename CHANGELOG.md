@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0
+
+- Add the optional `force_destroy` variable (bool, default `false`) and pass it to `aws_s3_bucket.assets`.
+
 ## v1.0.1
 
 - Enable versioning on the assets bucket.

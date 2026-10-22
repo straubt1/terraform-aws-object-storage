@@ -17,6 +17,7 @@ variable "tags" {
 }
 
 variable "force_destroy" {
-  type    = bool
-  default = false
+  description = "Whether to allow the bucket to be destroyed even if it contains objects."
+  type        = bool
+  default     = false
 }

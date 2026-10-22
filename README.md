@@ -32,6 +32,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment label applied to resources | `string` | `"dev"` | no |
+| <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | Whether to allow the bucket to be destroyed even if it contains objects. | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for resource names | `string` | `"networking"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags to apply to resources | `map(string)` | `{}` | no |
 
