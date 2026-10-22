@@ -1,3 +1,26 @@
+variable "environment" {
+  description = "Environment label applied to resources"
+  type        = string
+  default     = "dev"
+}
+
+variable "name_prefix" {
+  description = "Prefix for resource names"
+  type        = string
+  default     = "object-storage"
+}
+
+variable "tags" {
+  description = "Additional tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}
+
+variable "kms_key_arn" {
+  description = "ARN of the customer managed KMS key for bucket encryption"
+  type        = string
+}
+
 locals {
   bucket_name = "${var.name_prefix}-${var.environment}-assets-rename"
   common_tags = merge(var.tags, {
@@ -10,6 +33,26 @@ resource "aws_s3_bucket" "assets" {
   bucket = local.bucket_name
 
   tags = local.common_tags
+}
+
+resource "aws_s3_bucket_public_access_block" "assets" {
+  bucket = aws_s3_bucket.assets.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "assets" {
+  bucket = aws_s3_bucket.assets.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = var.kms_key_arn
+    }
+  }
 }
 
 resource "aws_s3_bucket_versioning" "assets" {
