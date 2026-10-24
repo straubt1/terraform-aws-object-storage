@@ -2,6 +2,14 @@
 
 Creates an S3 Bucket with versioning enabled.
 
+## Inputs and outputs
+
+- `environment` (string, default `"dev"`): Environment label applied to resources. It is part of the bucket name.
+- `name_prefix` (string, default `"networking"`): Prefix for resource names. It is the first part of the bucket name. Because this module creates an object storage bucket, consider changing the default to a neutral or storage-specific value, such as `"object-storage"`.
+- `tags` (map(string), default `{}`): Additional tags applied to the bucket.
+- Output `bucket_arn`: ARN of the assets bucket.
+- Output `bucket_id`: ID of the assets bucket.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
