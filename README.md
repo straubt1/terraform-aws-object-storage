@@ -2,6 +2,13 @@
 
 Creates an S3 bucket with versioning enabled, public access blocked, and encryption using a customer managed KMS key.
 
+## Inputs
+
+- `environment` (string, default `"dev"`): Environment label applied to resources.
+- `kms_key_id` (string, required): ARN of the customer managed KMS key that encrypts the assets bucket.
+- `name_prefix` (string, default `"networking"`): Prefix for resource names. This prefix is applied to the assets bucket's resource names. The default value is under review because it appears to be copied from a networking module and does not match this module's object storage purpose.
+- `tags` (map(string), default `{}`): Additional tags to apply to resources.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
