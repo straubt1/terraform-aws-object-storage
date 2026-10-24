@@ -15,3 +15,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "kms_key_id" {
+  description = "ARN of the customer managed KMS key that encrypts the assets bucket"
+  type        = string
+}
