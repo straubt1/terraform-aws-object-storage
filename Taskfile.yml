@@ -2,9 +2,9 @@ version: "3"
 
 tasks:
   publish:
-    desc: Publish each versions/ folder as a branch; tag folders named vX.Y.Z
+    desc: Rebuild version branches in lineage order, tag vX.Y.Z, and push
     cmds:
-      - bash scripts/publish-versions.sh {{.CLI_ARGS}}
+      - bash scripts/publish-versions.sh
 
   delete-local-tags:
     desc: Delete local tags without changing the remote
