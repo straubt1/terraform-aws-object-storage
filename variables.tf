@@ -17,6 +17,7 @@ variable "tags" {
 }
 
 variable "force_destroy" {
-  type    = bool
-  default = false
+  description = "Whether to allow the assets bucket to be destroyed even when it contains objects"
+  type        = bool
+  default     = false
 }

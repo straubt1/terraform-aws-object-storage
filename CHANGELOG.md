@@ -1,9 +1,11 @@
 # Changelog
 
-## v1.0.1
+## v1.1.0
 
-- Enable versioning on the assets bucket.
-- Add a `Description` tag set to `Shared object storage assets bucket with versioning`.
+- Add an optional `force_destroy` variable (default `false`).
+- Set `force_destroy` on the `aws_s3_bucket.assets` resource.
+- Block all public access on the assets bucket with an `aws_s3_bucket_public_access_block`.
+- Encrypt the assets bucket with SSE-KMS using a customer managed KMS key.
 
 ## v1.0.0
 
