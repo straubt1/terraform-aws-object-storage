@@ -3,6 +3,7 @@ locals {
   common_tags = merge(var.tags, {
     Module      = "terraform-aws-object-storage"
     Description = "Shared object storage assets bucket with versioning"
+    Owner       = "platform"
   })
 }
 
