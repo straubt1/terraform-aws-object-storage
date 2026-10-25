@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.2
+
+- Rename the assets bucket so its name now ends in `-assets-rename`.
+- Add an S3 public access block to the assets bucket with all four protections enabled.
+- Encrypt the assets bucket with SSE-KMS using a new customer managed KMS key with rotation enabled.
+
 ## v1.0.1
 
 - Enable versioning on the assets bucket.
