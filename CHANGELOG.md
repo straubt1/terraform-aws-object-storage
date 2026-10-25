@@ -5,6 +5,7 @@
 - Require `kms_key_id` and encrypt the assets bucket with that customer managed key. Configurations that omit it cannot apply.
 - Block public ACLs and public bucket policies on the assets bucket.
 - Add an `Owner` tag set to `platform`.
+- Change the default of `name_prefix` in variables.tf from `networking` to `bucket`.
 
 ## v1.0.1
 
