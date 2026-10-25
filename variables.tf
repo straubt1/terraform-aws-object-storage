@@ -17,6 +17,7 @@ variable "tags" {
 }
 
 variable "force_destroy" {
-  type    = bool
-  default = false
+  description = "Whether to delete all objects from the assets bucket when it is destroyed, so destroy does not fail on a non-empty bucket"
+  type        = bool
+  default     = false
 }
